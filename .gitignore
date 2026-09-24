@@ -1,2 +1,3 @@
 tripleOpsEnv
 __pycache__/
+.env
