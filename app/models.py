@@ -11,8 +11,13 @@ class IncidentStatus(str, Enum):
     contained = "contained"
     closed = "closed"
 
+class UnitStatus(str, Enum):
+    available = "available"
+    dispatched = "dispatched"
+    off_duty = "off_duty"
 
-class Incidents(BaseModel):
+
+class Incident(BaseModel):
     incident_type: str
     latitude: float
     longitude: float
@@ -21,3 +26,14 @@ class Incidents(BaseModel):
     status: IncidentStatus
     reported_at: datetime
     closed_at: Optional[datetime] = None
+
+class ResponseUnit(BaseModel):
+    callsign: str
+    unit_type: str
+    status: UnitStatus = UnitStatus.available
+
+class DispatchedUnit(BaseModel):
+    incident_id: int
+    unit_id: int
+    dispatched_at: datetime
+    returned_at: Optional[datetime] = None
