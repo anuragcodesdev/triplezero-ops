@@ -16,3 +16,4 @@ Work in progress, Stage 1 build log starts here.
 
 ## Known Limitations / TODO
 - `response_units.callsign` has no UNIQUE constraint yet, so the seed script can generate duplicate callsigns (e.g. two separate rows both named "CFA Truck 7"). Should add a UNIQUE constraint once the schema is revisited.
+- `response_units.status` is a plain VARCHAR rather than an ENUM, unlike `incidents.status`. Inconsistent on purpose-vs-accident - should be unified to an ENUM later.
