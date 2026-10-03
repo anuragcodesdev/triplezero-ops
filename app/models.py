@@ -6,15 +6,15 @@ from typing import Optional, Annotated
 
 
 class IncidentStatus(str, Enum):
-    reported = "reported"
-    dispatched = "dispatched"
-    contained = "contained"
-    closed = "closed"
+    REPORTED = "reported"
+    DISPATCHED = "dispatched"
+    CONTAINED = "contained"
+    CLOSED = "closed"
 
 class UnitStatus(str, Enum):
-    available = "available"
-    dispatched = "dispatched"
-    off_duty = "off_duty"
+    AVAILABLE = "available"
+    DISPATCHED = "dispatched"
+    OFF_DUTY = "off_duty"
 
 
 class Incident(BaseModel):
@@ -30,7 +30,7 @@ class Incident(BaseModel):
 class ResponseUnit(BaseModel):
     callsign: str
     unit_type: str
-    status: UnitStatus = UnitStatus.available
+    status: UnitStatus = UnitStatus.AVAILABLE
 
 class DispatchedUnit(BaseModel):
     incident_id: int
