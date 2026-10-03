@@ -9,6 +9,7 @@ from app.models import (
     ResponseUnit,
     UnitStatus,
 )
+from app.db import insert_incident, insert_response_unit
 
 fake = Faker()
 
@@ -109,4 +110,12 @@ def generate_random_response_unit():
     )
 
 
+def bulk_insert_incident(num_incidents_to_insert):
+    for _ in range(num_incidents_to_insert):
+        incident = generate_random_incident()
+        insert_incident(incident)
 
+def bulk_insert_response_unit(num_response_units_to_insert):
+    for _ in range(num_response_units_to_insert):
+        response_unit = generate_random_response_unit()
+        insert_response_unit(response_unit)

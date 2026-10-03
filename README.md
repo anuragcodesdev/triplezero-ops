@@ -13,4 +13,6 @@ Work in progress, Stage 1 build log starts here.
 - Set up a dedicated `triplezero` database and a least-privilege application role (`triplezero_app`), scoped to only the permissions the app actually needs, rather than using the Postgres superuser.
 - Moved all database credentials into a `.env` file (excluded from git) and built a `psycopg2`-based connection function that reads config from environment variables. Verified a live connection.
 
-Next up: a Faker-based seed script to populate realistic sample data.
+
+## Known Limitations / TODO
+- `response_units.callsign` has no UNIQUE constraint yet, so the seed script can generate duplicate callsigns (e.g. two separate rows both named "CFA Truck 7"). Should add a UNIQUE constraint once the schema is revisited.
