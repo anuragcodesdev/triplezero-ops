@@ -3,8 +3,10 @@ from typing import Any
 
 from dotenv import load_dotenv
 import psycopg2
+from psycopg2.extras import RealDictCursor
 
 from app.models import Incident, ResponseUnit
+
 
 load_dotenv()
 
@@ -99,3 +101,31 @@ def insert_response_unit(response_unit: ResponseUnit) -> None:
     conn.commit()
     cursor.close()
     conn.close()
+
+
+def get_all_incidents() -> list[Incident]:
+    """
+    Fetches every incident record from the database. It converts each row into an Incident model so the calling code can work with typed objects.
+
+    params:
+        :None None: No parameters are required.
+    returns:
+        :incidents list: A list of Incident objects loaded from the database.
+    """
+    conn: Any = get_connection()
+    cursor: Any = conn.cursor(cursor_factory=RealDictCursor)
+
+    sql: str = """SELECT * FROM INCIDENTS;"""
+
+    cursor.execute(sql)
+    data: list[dict[str, Any]] = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    incidents: list[Incident] = []
+    for row in data:
+        incident_obj: Incident = Incident.model_validate(row)
+        incidents.append(incident_obj)
+
+    return incidents
