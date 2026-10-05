@@ -1,11 +1,11 @@
 import os
-from typing import Any
+from typing import Any, List
 
 from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from app.models import Incident, ResponseUnit
+from app.models import Incident, ResponseUnit, IncidentOut
 
 
 load_dotenv()
@@ -39,7 +39,7 @@ def insert_incident(incident: Incident) -> None:
         :None None: This function does not return a value.
     """
     conn: Any = get_connection()
-    cursor: Any = conn.cursor()
+    cursor: Any = conn.cursor(cursor_factory=RealDictCursor)
 
     sql ="""
             INSERT INTO incidents (
@@ -51,6 +51,7 @@ def insert_incident(incident: Incident) -> None:
             status,
             reported_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
         """
 
     cursor.execute(
@@ -66,9 +67,13 @@ def insert_incident(incident: Incident) -> None:
         ),
     )
 
+    data = cursor.fetchone()
+
     conn.commit()
     cursor.close()
     conn.close()
+
+    return data['id']
 
 def insert_response_unit(response_unit: ResponseUnit) -> None:
     """
@@ -129,3 +134,23 @@ def get_all_incidents() -> list[Incident]:
         incidents.append(incident_obj)
 
     return incidents
+
+def get_incident(id: int) -> IncidentOut:
+    conn : Any = get_connection()
+    cursor : Any = conn.cursor(cursor_factory = RealDictCursor)
+
+
+    sql: str = """
+        SELECT *
+        FROM incidents
+        WHERE id = %s;
+    """
+
+    cursor.execute(sql, (id,))
+    data = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return data
+     

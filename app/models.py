@@ -27,6 +27,25 @@ class Incident(BaseModel):
     reported_at: datetime
     closed_at: Optional[datetime] = None
 
+class IncidentCreate(BaseModel):
+    incident_type: str
+    latitude: float
+    longitude: float
+    description: str
+    severity: Annotated[int, Field(ge=1, le=4)]
+
+class IncidentOut(BaseModel):
+    id: int
+    incident_type: str
+    latitude: float
+    longitude: float
+    description: str
+    severity: Annotated[int, Field(ge=1, le=4)]
+    status: IncidentStatus
+    reported_at: datetime
+    closed_at: Optional[datetime] = None
+
+
 class ResponseUnit(BaseModel):
     callsign: str
     unit_type: str
