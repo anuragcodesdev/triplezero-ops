@@ -17,17 +17,21 @@ def show_incidents() -> List[Incident]:
 @app.post("/createincidents")
 def create_incident(incident: IncidentCreate) -> IncidentOut:
 
+    # Creating full incident object
+    full_incident = Incident(
+                            incident_type = incident.incident_type,
+                            latitude = incident.latitude,
+                            longitude = incident.longitude,
+                            description = incident.description,
+                            severity = incident.severity,
+                            status = IncidentStatus.REPORTED,
+                            reported_at = datetime.now()
+                            )
 
-    full_incident = Incident(incident_type = incident.incident_type,
-                        latitude = incident.latitude,
-                        longitude = incident.longitude,
-                        description = incident.description,
-                        severity = incident.severity,
-                        status = IncidentStatus.REPORTED,
-                        reported_at = datetime.now())
-
+    # Insert incident
     incident_id = insert_incident(incident=full_incident)
 
+    # Given incident is inserted into table we have the Incident + id
     return IncidentOut(
         id=incident_id,
         incident_type=full_incident.incident_type,
