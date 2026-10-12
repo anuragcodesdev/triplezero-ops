@@ -19,6 +19,12 @@ Work in progress, Stage 1 build log starts here.
 - Fixed least-privilege role permissions: `triplezero_app` needed explicit GRANTs on sequences (not just tables) to use auto-incrementing IDs.
 - Seeded the database with 30 incidents and 15 response units; verified end-to-end via row counts. Week 1 complete.
 
+**12/10/2026**
+- Built the FastAPI service with `GET /`, `GET /incidents`, `GET /incidents/{incident_id}` and `POST /incidents`. Pydantic validates every request and response, and Swagger docs are generated automatically at `/docs`.
+- Decision: separate models for input (`IncidentCreate`), storage (`Incident`) and output (`IncidentOut`), so callers can't set server-controlled fields like `status` and `reported_at`, and responses include the Postgres-generated `id` (returned via `INSERT ... RETURNING id`).
+- Decision: `db.py` returns `None` for a missing incident, and the endpoint turns that into a 404, which keeps the database layer independent of FastAPI. Non-integer ids get a 422 from FastAPI's validation before the function runs.
+- Wrapped database work in `try/finally` so connections close even when a query fails, and installed `pytest` and `httpx` ready for API tests.
+
 
 ## Known Limitations / TODO
 - `response_units.callsign` has no UNIQUE constraint yet, so the seed script can generate duplicate callsigns (e.g. two separate rows both named "CFA Truck 7"). Should add a UNIQUE constraint once the schema is revisited.

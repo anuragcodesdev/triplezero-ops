@@ -1,5 +1,5 @@
 import os
-from typing import Any, List
+from typing import Any, List, Optional
 
 from dotenv import load_dotenv
 import psycopg2
@@ -108,7 +108,7 @@ def insert_response_unit(response_unit: ResponseUnit) -> None:
     conn.close()
 
 
-def get_all_incidents() -> list[Incident]:
+def get_all_incidents() -> list[IncidentOut]:
     """
     Fetches every incident record from the database. It converts each row into an Incident model so the calling code can work with typed objects.
 
@@ -128,14 +128,14 @@ def get_all_incidents() -> list[Incident]:
     cursor.close()
     conn.close()
 
-    incidents: list[Incident] = []
+    incidents: list[IncidentOut] = []
     for row in data:
-        incident_obj: Incident = Incident.model_validate(row)
+        incident_obj: IncidentOut = IncidentOut.model_validate(row)
         incidents.append(incident_obj)
 
     return incidents
 
-def get_incident(id: int) -> IncidentOut:
+def get_incident(incident_id: int) -> Optional[IncidentOut]:
     conn : Any = get_connection()
     cursor : Any = conn.cursor(cursor_factory = RealDictCursor)
 
@@ -146,11 +146,18 @@ def get_incident(id: int) -> IncidentOut:
         WHERE id = %s;
     """
 
-    cursor.execute(sql, (id,))
-    data = cursor.fetchone()
+    try:
+        cursor.execute(sql, (incident_id,))
+        data = cursor.fetchone()
 
-    cursor.close()
-    conn.close()
+    finally:
+        cursor.close()
+        conn.close()
 
-    return data
+
+    if data:
+        incident: IncidentOut = IncidentOut.model_validate(data)
+        return incident
+
+    return None
      

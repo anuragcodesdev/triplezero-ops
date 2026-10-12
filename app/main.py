@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from app.db import get_all_incidents, insert_incident
+from fastapi import FastAPI, HTTPException
+from app.db import get_all_incidents, insert_incident, get_incident
 from app.models import Incident, IncidentCreate, IncidentOut, IncidentStatus
 from typing import List
 from datetime import datetime
@@ -11,10 +11,10 @@ def root():
     return {"message": "TripleZero Ops API is running"}
 
 @app.get("/incidents")
-def show_incidents() -> List[Incident]:
+def show_incidents() -> List[IncidentOut]:
     return get_all_incidents()
 
-@app.post("/createincidents")
+@app.post("/incidents")
 def create_incident(incident: IncidentCreate) -> IncidentOut:
 
     # Creating full incident object
@@ -42,4 +42,11 @@ def create_incident(incident: IncidentCreate) -> IncidentOut:
         status=full_incident.status,
         reported_at=full_incident.reported_at,
     )
+
+@app.get("/incidents/{incident_id}")
+def show_incident(incident_id: int) -> IncidentOut:
+    incident: IncidentOut = get_incident(incident_id)
+    if incident is None:
+        raise HTTPException(status_code=404, detail=f"ID: {incident_id} does not exist.")
+    return incident
         
