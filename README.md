@@ -26,6 +26,12 @@ Work in progress, Stage 1 build log starts here.
 - Wrapped database work in `try/finally` so connections close even when a query fails, and installed `pytest` and `httpx` ready for API tests.
 
 
+**14/10/2026**
+- Added pytest tests for the API covering a success, a 404 for a missing incident, and a 422 for a non-integer id and for an out-of-range severity. Confirmed by row count that a rejected POST writes nothing to the database.
+- Week 2 complete: REST API with validated input and output models, auto-generated docs, and automated tests.
+
+
 ## Known Limitations / TODO
 - `response_units.callsign` has no UNIQUE constraint yet, so the seed script can generate duplicate callsigns (e.g. two separate rows both named "CFA Truck 7"). Should add a UNIQUE constraint once the schema is revisited.
 - `response_units.status` is a plain VARCHAR rather than an ENUM, unlike `incidents.status`. Inconsistent on purpose-vs-accident - should be unified to an ENUM later.
+- Tests run against the real `triplezero` database and assume incident 1 exists and 999 does not. There is no test for a valid `POST /incidents` yet, because it would insert real rows. Should move to a separate test database.
